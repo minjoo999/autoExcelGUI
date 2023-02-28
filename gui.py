@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from datetime import datetime
-import main
+import make
  
 # UI파일 연결
 form_class = uic.loadUiType("autoUi.ui")[0]
@@ -39,7 +39,7 @@ class WindowClass(QMainWindow, form_class) :
 
     # 정리 시작
     def startBtnPush(self):
-        print(main.start)
+        print(make.start)
 
     # 작업 종료 후 완료했습니다 창 만들기
     # or 만들어진 파일 저장된 폴더 띄우기
