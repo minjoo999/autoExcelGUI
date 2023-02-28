@@ -39,12 +39,13 @@ class WindowClass(QMainWindow, form_class) :
 
     # 정리 시작
     def startBtnPush(self):
-        print(make.start)
+        # start = make.begin
+        print(make.begin())
 
     # 작업 종료 후 완료했습니다 창 만들기
-    # or 만들어진 파일 저장된 폴더 띄우기
-
-if __name__ == "__main__" :
+    # or 만들어진 파일 저장된 폴더 띄우기                                                                                                                  
+    
+if __name__ == "__main__" :                                                                                                                                                                                  
     app = QApplication(sys.argv) 
     myWindow = WindowClass() 
     myWindow.show()
