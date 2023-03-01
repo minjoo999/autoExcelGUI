@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from datetime import datetime
-import make
+from make import autoExcelAdjust
  
 # UI파일 연결
 form_class = uic.loadUiType("autoUi.ui")[0]
@@ -27,8 +27,10 @@ class WindowClass(QMainWindow, form_class) :
 
     # 내용 확정 (시작일자, 종료일자, 제목)
     def fixBtnPush(self):
-        startDate = self.startDate.date().toString("yyyy-MM-dd")
-        endDate = self.endDate.date().toString("yyyy-MM-dd")
+        # startDate = self.startDate.date().toString("yyyy-MM-dd")
+        global startDate, endDate, title
+        startDate = self.startDate.date().toString("yyMMdd")
+        endDate = self.endDate.date().toString("yyMMdd")
         title = self.titleText.toPlainText()
 
         # 제목을 지어야만 내용확정 가능
@@ -45,8 +47,11 @@ class WindowClass(QMainWindow, form_class) :
     def startBtnPush(self):
 
         # 제목을 지어야만 정리 시작 가능
-        if len(self.titleText.toPlainText()) > 0:
-            print(make.begin())
+        if len(title) > 0:
+            # print(begin())
+            # print("작업 시작합니다")
+            start = autoExcelAdjust(startDate, endDate, title)
+            start
         else:
             QMessageBox.warning(self, "경고", "제목을 입력해주세요")
 
