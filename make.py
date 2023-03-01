@@ -1,6 +1,17 @@
+import time
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
+from typing import *
+
+driver = webdriver.Chrome('chromedriver.exe')
+
 # 사이트 selenium으로 접속
+driver.get("http://admshop.husstem.co.kr/Login/")
 
 # 접속한 사이트에서 로그인
+# user_id = 
 
 # 배송중으로 이동
 
