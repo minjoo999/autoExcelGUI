@@ -20,15 +20,10 @@ class WindowClass(QMainWindow, form_class) :
         self.fixBtn.clicked.connect(self.fixBtnPush)
         self.startBtn.clicked.connect(self.startBtnPush)
     
-    # 기본 제목
+    # 기본 제목 정하기
     def defaultTitle(self):
-        # 제목 정하기
         date = datetime.now().date()
         self.titleText.setPlainText(f"시더스 정산자료_스타제과_{date}")
-
-        # 제목짓기 칸 막기
-        self.titleText.setReadOnly(True)
-    
 
     # 내용 확정 (시작일자, 종료일자, 제목)
     def fixBtnPush(self):
@@ -39,12 +34,13 @@ class WindowClass(QMainWindow, form_class) :
 
     # 정리 시작
     def startBtnPush(self):
-        print(make.start)
+        # start = make.begin
+        print(make.begin())
 
     # 작업 종료 후 완료했습니다 창 만들기
-    # or 만들어진 파일 저장된 폴더 띄우기
-
-if __name__ == "__main__" :
+    # or 만들어진 파일 저장된 폴더 띄우기                                                                                                                  
+    
+if __name__ == "__main__" :                                                                                                                                                                                  
     app = QApplication(sys.argv) 
     myWindow = WindowClass() 
     myWindow.show()
