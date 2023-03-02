@@ -218,7 +218,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'nanumgothic'; font-size:12pt;&quot;&gt;아이디&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="idText">
+   <widget class="QTextEdit" name="userId">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -255,7 +255,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'nanumgothic'; font-size:12pt;&quot;&gt;비밀번호&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="pwText">
+   <widget class="QTextEdit" name="userPw">
     <property name="enabled">
      <bool>true</bool>
     </property>

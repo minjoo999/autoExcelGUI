@@ -28,10 +28,12 @@ class WindowClass(QMainWindow, form_class) :
     # 내용 확정 (시작일자, 종료일자, 제목)
     def fixBtnPush(self):
         # startDate = self.startDate.date().toString("yyyy-MM-dd")
-        global startDate, endDate, title
-        startDate = self.startDate.date().toString("yyMMdd")
-        endDate = self.endDate.date().toString("yyMMdd")
+        global startDate, endDate, title, userId, userPw
+        startDate = self.startDate.date().toString("yyyy-MM-dd")
+        endDate = self.endDate.date().toString("yyyy-MM-dd")
         title = self.titleText.toPlainText()
+        userId = self.userId.toPlainText()
+        userPw = self.userPw.toPlainText()
 
         # 제목을 지어야만 내용확정 가능
         # 내용 확정 버튼 누르면 내용 변경 막힘
@@ -39,7 +41,9 @@ class WindowClass(QMainWindow, form_class) :
             self.startDate.setEnabled(False)
             self.endDate.setEnabled(False)
             self.titleText.setEnabled(False)
-            print(startDate, endDate, title)
+            self.userId.setEnabled(False)
+            self.userPw.setEnabled(False)
+            print(startDate, endDate, title, userId, userPw)
         else:
             QMessageBox.warning(self, "경고", "제목을 입력해주세요")
 
@@ -50,7 +54,7 @@ class WindowClass(QMainWindow, form_class) :
         if len(title) > 0:
             # print(begin())
             # print("작업 시작합니다")
-            start = autoExcelAdjust(startDate, endDate, title)
+            start = autoExcelAdjust(startDate, endDate, title, userId, userPw)
             start
         else:
             QMessageBox.warning(self, "경고", "제목을 입력해주세요")
