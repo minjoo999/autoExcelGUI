@@ -22,8 +22,9 @@ class WindowClass(QMainWindow, form_class) :
     
     # 기본 제목 정하기
     def defaultTitle(self):
-        date = datetime.now().date()
-        self.titleText.setPlainText(f"시더스 정산자료_스타제과_{date}")
+        global today
+        today = datetime.now().date()
+        self.titleText.setPlainText(f"시더스 정산자료_스타제과_{today}")
 
     # 내용 확정 (시작일자, 종료일자, 제목)
     def fixBtnPush(self):
@@ -43,7 +44,7 @@ class WindowClass(QMainWindow, form_class) :
             self.titleText.setEnabled(False)
             self.userId.setEnabled(False)
             self.userPw.setEnabled(False)
-            print(startDate, endDate, title, userId, userPw)
+            print(today, startDate, endDate, title, userId, userPw)
         else:
             QMessageBox.warning(self, "경고", "제목을 입력해주세요")
 
@@ -54,7 +55,7 @@ class WindowClass(QMainWindow, form_class) :
         if len(title) > 0:
             # print(begin())
             # print("작업 시작합니다")
-            start = autoExcelAdjust(startDate, endDate, title, userId, userPw)
+            start = autoExcelAdjust(startDate, endDate, title, userId, userPw, today)
             start
         else:
             QMessageBox.warning(self, "경고", "제목을 입력해주세요")
