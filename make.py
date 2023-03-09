@@ -17,14 +17,11 @@ class autoExcelAdjust():
 
         print(startDate, endDate, title, userId, userPw, today)
         self.all_process(userId, userPw, startDate, endDate, today, title)
-        # start = self.login(userId, userPw)
-        # self.find_purchase(start, startDate, endDate)
     
     # 전체 절차를 한 함수에 담기
     def all_process(self, userId, userPw, startDate, endDate, today, title):
-        # start = self.login(self, userId, userPw)
-        # self.login(userId, userPw)
-        # self.excel_download()
+        self.login(userId, userPw)
+        self.excel_download()
         self.edit_final_excel(userId, today, title, startDate, endDate)
         return "complete"
 
@@ -47,11 +44,19 @@ class autoExcelAdjust():
         login_btn = """/html/body/div/form/div/div/button"""
         driver.find_element(By.XPATH, login_btn).click()
         print("로그인 완료")
-        return 1
+
+        # "이미 로그인되어 있습니다" 알림창에 확인버튼 누르기
+        try:
+            result = driver.switch_to.alert()
+            result.accept()
+        except:
+            pass
 
 
     # 배송완료, 배송중 엑셀출력하기 눌러서 다운로드
     def excel_download(self):
+
+        time.sleep(1)
 
         # 배송완료로 이동
         driver.get("http://admshop.husstem.co.kr/?PG_CODE=140")
@@ -59,14 +64,14 @@ class autoExcelAdjust():
 
         # 엑셀출력하기 누르기
         excel_btn = """//*[@id="frmSearch"]/div[2]/input"""
-        driver.find_element(By.XPATH, excel_btn)
+        driver.find_element(By.XPATH, excel_btn).click()
 
         # 배송완료 끝나면 배송중으로 이동
         driver.get("http://admshop.husstem.co.kr/?PG_CODE=131")
         time.sleep(1)
 
         # 엑셀출력하기 누르기
-        driver.find_element(By.XPATH, excel_btn)
+        driver.find_element(By.XPATH, excel_btn).click()
 
     # 출력된 엑셀파일의 내용을 다른 파일에 적기
     # 저장경로 소프트코딩 방법 고민하기
@@ -77,22 +82,25 @@ class autoExcelAdjust():
 
         # 시작일, 종료일 변수 설정
         format = "%Y-%m-%d"
-        startDate_2 = datetime.strptime(startDate, format)
-        endDate_2 = datetime.strptime(endDate, format)
+        # startDate_2 = datetime.strptime(startDate, format)
+        # endDate_2 = datetime.strptime(endDate, format)
+        startDate_2 = time.strptime(startDate, format)
+        endDate_2 = time.strptime(endDate, format)
 
-        # 배송완료 엑셀파일 열기
-        ship_ed = excel.Workbooks.Open(f"C:\\Users\\sjctk\\Downloads\\{userId}({today}).xls")
-
-        # 배송중 엑셀파일 열기
-        ship_ing = excel.Workbooks.Open(f"C:\\Users\\sjctk\\Downloads\\{userId}({today}) (1).xls")
         
         # 양식 열기
         wb_origin = excel.Workbooks.Open("E:\\2023\\projects\\autoExcelAdjust\\original.xlsx")
         wb_origin_active = wb_origin.ActiveSheet
 
+        # 배송완료 엑셀파일 열기
+        ship_ed = excel.Workbooks.Open(f"C:\\Users\\sjctk\\Downloads\\{userId}({today}).xls")
+
         # 배송완료 변수 지정, 특정 항목을 특정 칸에 넣기 시작
         shipped_active = ship_ed.ActiveSheet
         self.edit_excel(shipped_active, wb_origin_active, startDate_2, endDate_2)
+
+        # 배송중 엑셀파일 열기
+        ship_ing = excel.Workbooks.Open(f"C:\\Users\\sjctk\\Downloads\\{userId}({today}) (1).xls")
 
         # 배송중 변수 지정, 특정 항목을 특정 칸에 넣기 시작
         shipping_active = ship_ing.ActiveSheet
@@ -108,67 +116,79 @@ class autoExcelAdjust():
         # 다운로드된 파일에 구매내역 써있는 줄의 수
         lines = read_file.UsedRange.CurrentRegion.Rows.Count
 
-        format = "%Y-%m-%d"
+        global num_final
+        num_final = 0
 
         # 첫번째 파일, 두번째 파일 구분
         if type(write_file.Range("B3").Value) == "NoneType":
 
-            for line in range(2, lines+1):
+            # num을 세서 남겨야 함
+            self.copy_and_paste(read_file, write_file, lines, startDate, endDate, num_final)
+                    
+        else:
+            # 앞에서 세놓은 num을 줄수에 포함시켜야 함.
+            self.copy_and_paste(read_file, write_file, lines, startDate, endDate, num_final)
 
-                # 정산 대상에 해당하는 날짜 지목
-                # 그 날짜에 해당하는 셀들만 복붙하기
-                if startDate <= datetime.strptime(read_file.Range("AB2").Value[0:10], format) <= endDate:
-
-                    # 아래 로직 함수로 만들기
-                    # 주문완료일자: 홈페이지 파일 AB2 -> 정산자료 B3
-                    read_file.Range(f"AB{line}").Copy()
-                    write_file.Range(f"B{line + 1}").Select()
-                    write_file.Paste()
-
-                    # 판매상품: 홈페이지 파일 O2 -> 정산자료 C3
-                    read_file.Range(f"O{line}").Copy()
-                    write_file.Range(f"C{line + 1}").Select()
-                    write_file.Paste()
-
-                    # 판매금액: 홈페이지 파일 S2 -> 정산자료 D3
-                    read_file.Range(f"S{line}").Copy()
-                    write_file.Range(f"D{line + 1}").Select()
-                    write_file.Paste()
-
-                    # 총샵마진: 홈페이지 파일 Y2 -> 정산자료 G3
-                    read_file.Range(f"Y{line}").Copy()
-                    write_file.Range(f"G{line + 1}").Select()
-                    write_file.Paste()
-
-                    # 주문인: 홈페이지 파일 F2 -> 정산자료 J3
-                    read_file.Range(f"F{line}").Copy()
-                    write_file.Range(f"F{line + 1}").Select()
-                    write_file.Paste()
-
-                    # 수령인: 홈페이지 파일 J2 -> 정산자료 K3
-                    read_file.Range(f"J{line}").Copy()
-                    write_file.Range(f"K{line + 1}").Select()
-                    write_file.Paste()
-
-        # else:
+            # 읽히는 파일 입장에서는 2행, 3행, 4행 이런 식일텐데
+            # 쓰는 파일은 이제 앞에 해놓은 결과에 따라 몇행에서 시작할지 정해지는 거지
+            # 미리 적어놓은게 몇행까지인가...를 알수 있는 방법은?
 
 
+    # 파일 복붙 로직 (AB2 -> B3 등)
+    def copy_and_paste(self, read_file, write_file, lines, startDate, endDate, line_num):
 
+        # 반복 횟수 누적해서 기록해놓기. 여기서 기록한 숫자를 global 변수 지정해서 다음 번에 row 갯수로 써먹을수 있게.
 
+        # 아래 로직 함수로 만들기
+        # 첫번째 파일: AB2 -> B3
+        # 이미 첫번째 파일에서 5줄을 복붙해놓은 이후: AB2 -> B8 (AB2 -> B(3+5))
+        # line + 1 + 0 vs. line + 1 + (앞에서구한)num
 
+        num = 0
 
-        # 시작점을 어떻게 선정하는가? 첫번째 파일은 그냥 시작점 (AB2, B3 등)을 하드코딩하면 됨
-        # 두번째 파일이 문제 -> 첫번째 파일을 집어넣은 그 마지막 행 번호를 변수로 지정하고 불러오면 될 듯.
-        # 첫번째 파일일 경우의 로직과 두번째 파일일 경우의 로직을 if로 분리해보기. 아니면 변수명 저장을 잘 건드려보고.
+        format = "%Y-%m-%d"
+        # time_read = read_file.Range("AB2").Value[0:10]
+        time_read = read_file.Range("AB2").Value.strftime(format)
+        time_read_file = time.strptime(time_read, format)
 
-        # len으로 내용이 있는 만큼만...?
-        # 사이트 다운로드 파일 파트는 2행으로 시작하는 하드코딩 하기
-        # 작성하는 파일 파트는 CurrentRegion 쓰고, 그 마지막 숫자 다음 줄부터 작업 시작시키기
+        for line in range(2, lines+1):
 
-        # Select()
-        # write_file.UsedRange.Select()
-        
-        # write_file.Range("B2", "F2").select()
-        # print(read_file.UsedRange.SpecialCells(11).value)
+            # 정산 대상에 해당하는 날짜 지목
+            # 그 날짜에 해당하는 셀들만 복붙하기
+            # if startDate <= datetime.strptime(read_file.Range("AB2").Value[0:10], format) <= endDate:
+            # if startDate <= time.strptime(read_file.Range("AB2").Value[0:10], format) <= endDate:
+            if (time_read_file >= startDate) & (time_read_file <= endDate):
 
-        # if write_file.UsedRange.SpecialCells(11).value == None:
+                # 주문완료일자: 홈페이지 파일 AB2 -> 정산자료 B3
+                read_file.Range(f"AB{line}").Copy()
+                write_file.Range(f"B{line + 1 + line_num}").Select()
+                write_file.Paste()
+
+                # 판매상품: 홈페이지 파일 O2 -> 정산자료 C3
+                read_file.Range(f"O{line}").Copy()
+                write_file.Range(f"C{line + 1 + line_num}").Select()
+                write_file.Paste()
+
+                # 판매금액: 홈페이지 파일 S2 -> 정산자료 D3
+                read_file.Range(f"S{line}").Copy()
+                write_file.Range(f"D{line + 1 + line_num}").Select()
+                write_file.Paste()
+
+                # 총샵마진: 홈페이지 파일 Y2 -> 정산자료 G3
+                read_file.Range(f"Y{line}").Copy()
+                write_file.Range(f"G{line + 1 + line_num}").Select()
+                write_file.Paste()
+
+                # 주문인: 홈페이지 파일 F2 -> 정산자료 J3
+                read_file.Range(f"F{line}").Copy()
+                write_file.Range(f"F{line + 1 + line_num}").Select()
+                write_file.Paste()
+
+                # 수령인: 홈페이지 파일 J2 -> 정산자료 K3
+                read_file.Range(f"J{line}").Copy()
+                write_file.Range(f"K{line + 1 + line_num}").Select()
+                write_file.Paste()
+
+                num = num + 1
+
+        num_final = num
