@@ -79,15 +79,13 @@ class autoExcelAdjust():
 
         excel = win32com.client.Dispatch("Excel.Application")
         excel.Visible = True
+        # excel.Visible = False
 
         # 시작일, 종료일 변수 설정
         format = "%Y-%m-%d"
-        # startDate_2 = datetime.strptime(startDate, format)
-        # endDate_2 = datetime.strptime(endDate, format)
         startDate_2 = time.strptime(startDate, format)
         endDate_2 = time.strptime(endDate, format)
 
-        
         # 양식 열기
         wb_origin = excel.Workbooks.Open("E:\\2023\\projects\\autoExcelAdjust\\original.xlsx")
         wb_origin_active = wb_origin.ActiveSheet
@@ -101,7 +99,7 @@ class autoExcelAdjust():
 
         # 배송중 엑셀파일 열기
         ship_ing = excel.Workbooks.Open(f"C:\\Users\\sjctk\\Downloads\\{userId}({today}) (1).xls")
-
+        
         # 배송중 변수 지정, 특정 항목을 특정 칸에 넣기 시작
         shipping_active = ship_ing.ActiveSheet
         self.edit_excel(shipping_active, wb_origin_active, startDate_2, endDate_2)
@@ -123,7 +121,7 @@ class autoExcelAdjust():
         if type(write_file.Range("B3").Value) == "NoneType":
 
             # num을 세서 남겨야 함
-            self.copy_and_paste(read_file, write_file, lines, startDate, endDate, num_final)
+            self.copy_and_paste(read_file, write_file, lines, startDate, endDate, 0)
                     
         else:
             # 앞에서 세놓은 num을 줄수에 포함시켜야 함.
@@ -145,19 +143,24 @@ class autoExcelAdjust():
         # line + 1 + 0 vs. line + 1 + (앞에서구한)num
 
         num = 0
-
         format = "%Y-%m-%d"
-        # time_read = read_file.Range("AB2").Value[0:10]
-        time_read = read_file.Range("AB2").Value.strftime(format)
-        time_read_file = time.strptime(time_read, format)
 
         for line in range(2, lines+1):
 
             # 정산 대상에 해당하는 날짜 지목
             # 그 날짜에 해당하는 셀들만 복붙하기
-            # if startDate <= datetime.strptime(read_file.Range("AB2").Value[0:10], format) <= endDate:
-            # if startDate <= time.strptime(read_file.Range("AB2").Value[0:10], format) <= endDate:
-            if (time_read_file >= startDate) & (time_read_file <= endDate):
+            time_read = read_file.Range(f"AB{line}").Value.strftime(format)
+            time_read_file = time.strptime(time_read, format)
+
+            # print(read_file.Range("AB2").Select())
+
+            # Select 메소드는 오직! write_file 에서만 오류가 생김
+            # time_read를 for문 안에 넣으니까 write_file의 select가 사고나네...
+            # print(write_file.Range("B2").Select())
+
+            time.sleep(1)
+
+            if startDate <= time_read_file <= endDate:
 
                 # 주문완료일자: 홈페이지 파일 AB2 -> 정산자료 B3
                 read_file.Range(f"AB{line}").Copy()
@@ -174,6 +177,11 @@ class autoExcelAdjust():
                 write_file.Range(f"D{line + 1 + line_num}").Select()
                 write_file.Paste()
 
+                # 판매수량: 홈페이지 파일 R2 -> 정산자료 E3
+                read_file.Range(f"R{line}").Copy()
+                write_file.Range(f"E{line + 1 + line_num}").Select()
+                write_file.Paste()
+
                 # 총샵마진: 홈페이지 파일 Y2 -> 정산자료 G3
                 read_file.Range(f"Y{line}").Copy()
                 write_file.Range(f"G{line + 1 + line_num}").Select()
@@ -181,7 +189,7 @@ class autoExcelAdjust():
 
                 # 주문인: 홈페이지 파일 F2 -> 정산자료 J3
                 read_file.Range(f"F{line}").Copy()
-                write_file.Range(f"F{line + 1 + line_num}").Select()
+                write_file.Range(f"J{line + 1 + line_num}").Select()
                 write_file.Paste()
 
                 # 수령인: 홈페이지 파일 J2 -> 정산자료 K3
@@ -192,3 +200,4 @@ class autoExcelAdjust():
                 num = num + 1
 
         num_final = num
+        print(num_final)
