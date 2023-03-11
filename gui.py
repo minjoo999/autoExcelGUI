@@ -57,11 +57,15 @@ class WindowClass(QMainWindow, form_class) :
             # print("작업 시작합니다")
             start = autoExcelAdjust(startDate, endDate, title, userId, userPw, today)
             start
+            self.afterFinish()
         else:
             QMessageBox.warning(self, "경고", "제목을 입력해주세요")
 
     # 작업 종료 후 완료했습니다 창 만들기
-    # or 만들어진 파일 저장된 폴더 띄우기                                                                                                                  
+    # & 만들어진 파일 저장된 폴더 띄우기
+    def afterFinish(self):
+        QMessageBox.information(self, "안내", "저장 완료되었습니다")
+                                                                                                                      
     
 if __name__ == "__main__" :                                                                                                                                                                                  
     app = QApplication(sys.argv) 

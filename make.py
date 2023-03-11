@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from typing import *
 import win32com.client 
 from datetime import datetime
+from PyQt5.QtWidgets import *
 
 # 절차 전체를 class로 묶음
 
@@ -86,27 +87,32 @@ class autoExcelAdjust():
         startDate_2 = time.strptime(startDate, format)
         endDate_2 = time.strptime(endDate, format)
 
-        # 양식 열기
-        wb_origin = excel.Workbooks.Open("E:\\2023\\projects\\autoExcelAdjust\\original.xlsx")
-        wb_origin_active = wb_origin.ActiveSheet
-
         # 배송완료 엑셀파일 열기
         ship_ed = excel.Workbooks.Open(f"C:\\Users\\sjctk\\Downloads\\{userId}({today}).xls")
-
-        # 배송완료 변수 지정, 특정 항목을 특정 칸에 넣기 시작
         shipped_active = ship_ed.ActiveSheet
+
+        # 양식 열고, 입력 시작
+        wb_origin = excel.Workbooks.Open("E:\\2023\\projects\\autoExcelAdjust\\original.xlsx")
+        wb_origin_active = wb_origin.ActiveSheet
         self.edit_excel(shipped_active, wb_origin_active, startDate_2, endDate_2)
+
+        # 저장하고 양식 닫기
+        wb_origin_active.SaveAs(f"E:\\2023\\projects\\autoExcelAdjust\\filesave\\editing\\editing_{today}.xlsx")
+        wb_origin.Close()
 
         # 배송중 엑셀파일 열기
         ship_ing = excel.Workbooks.Open(f"C:\\Users\\sjctk\\Downloads\\{userId}({today}) (1).xls")
-        
-        # 배송중 변수 지정, 특정 항목을 특정 칸에 넣기 시작
         shipping_active = ship_ing.ActiveSheet
-        self.edit_excel(shipping_active, wb_origin_active, startDate_2, endDate_2)
+        
+        # 아까 편집한 양식 열고, 입력 시작
+        wb_origin2 = excel.Workbooks.Open(f"E:\\2023\\projects\\autoExcelAdjust\\filesave\\editing\\editing_{today}.xlsx")
+        wb_origin2_active = wb_origin2.ActiveSheet
+        self.edit_excel(shipping_active, wb_origin2_active, startDate_2, endDate_2)
 
-        # 최종 제작된 파일 저장, 절차 종료
-        wb_origin_active.SaveAs(f"E:\\2023\\projects\\autoExcelAdjust\\filesave\\{title}.xlsx")
+        # 저장하고 절차 종료
+        wb_origin2_active.SaveAs(f"E:\\2023\\projects\\autoExcelAdjust\\filesave\\final\\{title}.xlsx")
         excel.Quit()
+        # QMessageBox.warning(self, "안내", "파일 저장 완료되었습니다")
 
     # 특정 항목 -> 특정 칸 절차 세부 분류
     def edit_excel(self, read_file, write_file, startDate, endDate):
@@ -156,48 +162,50 @@ class autoExcelAdjust():
 
             # Select 메소드는 오직! write_file 에서만 오류가 생김
             # time_read를 for문 안에 넣으니까 write_file의 select가 사고나네...
-            # print(write_file.Range("B2").Select())
-
-            time.sleep(1)
+            # print(write_file.Range("B2").Value)
 
             if startDate <= time_read_file <= endDate:
 
+                read_line = line + line_num + 1
+
                 # 주문완료일자: 홈페이지 파일 AB2 -> 정산자료 B3
                 read_file.Range(f"AB{line}").Copy()
-                write_file.Range(f"B{line + 1 + line_num}").Select()
+                write_file.Range(f"B{read_line}").Select()
                 write_file.Paste()
 
                 # 판매상품: 홈페이지 파일 O2 -> 정산자료 C3
                 read_file.Range(f"O{line}").Copy()
-                write_file.Range(f"C{line + 1 + line_num}").Select()
+                write_file.Range(f"C{read_line}").Select()
                 write_file.Paste()
 
                 # 판매금액: 홈페이지 파일 S2 -> 정산자료 D3
                 read_file.Range(f"S{line}").Copy()
-                write_file.Range(f"D{line + 1 + line_num}").Select()
+                write_file.Range(f"D{read_line}").Select()
                 write_file.Paste()
 
                 # 판매수량: 홈페이지 파일 R2 -> 정산자료 E3
                 read_file.Range(f"R{line}").Copy()
-                write_file.Range(f"E{line + 1 + line_num}").Select()
+                write_file.Range(f"E{read_line}").Select()
                 write_file.Paste()
 
                 # 총샵마진: 홈페이지 파일 Y2 -> 정산자료 G3
                 read_file.Range(f"Y{line}").Copy()
-                write_file.Range(f"G{line + 1 + line_num}").Select()
+                write_file.Range(f"G{read_line}").Select()
                 write_file.Paste()
 
                 # 주문인: 홈페이지 파일 F2 -> 정산자료 J3
                 read_file.Range(f"F{line}").Copy()
-                write_file.Range(f"J{line + 1 + line_num}").Select()
+                write_file.Range(f"J{read_line}").Select()
                 write_file.Paste()
 
                 # 수령인: 홈페이지 파일 J2 -> 정산자료 K3
                 read_file.Range(f"J{line}").Copy()
-                write_file.Range(f"K{line + 1 + line_num}").Select()
+                write_file.Range(f"K{read_line}").Select()
                 write_file.Paste()
 
                 num = num + 1
 
         num_final = num
-        print(num_final)
+        # print(num_final)
+
+        
