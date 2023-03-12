@@ -2,3 +2,6 @@
 __pycache__/
 venv/
 /chromedriver.exe
+/test.ipynb
+/original.xlsx
+filesave/

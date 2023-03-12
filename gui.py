@@ -22,16 +22,19 @@ class WindowClass(QMainWindow, form_class) :
     
     # 기본 제목 정하기
     def defaultTitle(self):
-        date = datetime.now().date()
-        self.titleText.setPlainText(f"시더스 정산자료_스타제과_{date}")
+        global today
+        today = datetime.now().date()
+        self.titleText.setPlainText(f"시더스 정산자료_스타제과_{today}")
 
     # 내용 확정 (시작일자, 종료일자, 제목)
     def fixBtnPush(self):
         # startDate = self.startDate.date().toString("yyyy-MM-dd")
-        global startDate, endDate, title
-        startDate = self.startDate.date().toString("yyMMdd")
-        endDate = self.endDate.date().toString("yyMMdd")
+        global startDate, endDate, title, userId, userPw
+        startDate = self.startDate.date().toString("yyyy-MM-dd")
+        endDate = self.endDate.date().toString("yyyy-MM-dd")
         title = self.titleText.toPlainText()
+        userId = self.userId.toPlainText()
+        userPw = self.userPw.toPlainText()
 
         # 제목을 지어야만 내용확정 가능
         # 내용 확정 버튼 누르면 내용 변경 막힘
@@ -39,7 +42,9 @@ class WindowClass(QMainWindow, form_class) :
             self.startDate.setEnabled(False)
             self.endDate.setEnabled(False)
             self.titleText.setEnabled(False)
-            print(startDate, endDate, title)
+            self.userId.setEnabled(False)
+            self.userPw.setEnabled(False)
+            print(today, startDate, endDate, title, userId, userPw)
         else:
             QMessageBox.warning(self, "경고", "제목을 입력해주세요")
 
@@ -50,13 +55,17 @@ class WindowClass(QMainWindow, form_class) :
         if len(title) > 0:
             # print(begin())
             # print("작업 시작합니다")
-            start = autoExcelAdjust(startDate, endDate, title)
+            start = autoExcelAdjust(startDate, endDate, title, userId, userPw, today)
             start
+            self.afterFinish()
         else:
             QMessageBox.warning(self, "경고", "제목을 입력해주세요")
 
     # 작업 종료 후 완료했습니다 창 만들기
-    # or 만들어진 파일 저장된 폴더 띄우기                                                                                                                  
+    # & 만들어진 파일 저장된 폴더 띄우기
+    def afterFinish(self):
+        QMessageBox.information(self, "안내", "저장 완료되었습니다")
+                                                                                                                      
     
 if __name__ == "__main__" :                                                                                                                                                                                  
     app = QApplication(sys.argv) 
