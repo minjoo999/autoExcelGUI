@@ -1,7 +1,12 @@
 /스타제과 - 시더스 정산자료.xlsx
 __pycache__/
+.vscode/
 venv/
 /chromedriver.exe
 /test.ipynb
 /original.xlsx
+/original2.xlsx
+/gui.spec
 filesave/
+build/
+dist/
