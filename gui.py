@@ -2,8 +2,9 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from datetime import datetime
-from make import autoExcelAdjust
- 
+# from make import autoExcelAdjust
+from maclogic import autoExcelAdjust
+
 # UI파일 연결
 form_class = uic.loadUiType("autoUi.ui")[0]
 

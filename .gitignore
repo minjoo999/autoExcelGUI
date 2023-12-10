@@ -10,3 +10,4 @@ venv/
 filesave/
 build/
 dist/
+.idea/
